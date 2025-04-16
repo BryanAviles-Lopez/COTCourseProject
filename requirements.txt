@@ -1,5 +1,4 @@
 Flask==3.0.3
 google-cloud-texttospeech==2.17.2
 google-genai==1.7.0
-pdfplumber==0.10.3
 gunicorn==22.0.0

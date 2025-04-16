@@ -8,7 +8,6 @@ const timerDisplay = document.getElementById('timer');
 let mediaRecorder;
 let audioChunks = [];
 let startTime;
-let timerInterval;
 
 function formatTime(time) {
   const minutes = Math.floor(time / 60);
@@ -22,9 +21,8 @@ recordButton.addEventListener('click', () => {
       mediaRecorder = new MediaRecorder(stream);
       mediaRecorder.start();
 
-      audioChunks = [];  // Clear previous chunks
       startTime = Date.now();
-      timerInterval = setInterval(() => {
+      let timerInterval = setInterval(() => {
         const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
         timerDisplay.textContent = formatTime(elapsedTime);
       }, 1000);
@@ -34,28 +32,26 @@ recordButton.addEventListener('click', () => {
       };
 
       mediaRecorder.onstop = () => {
-        clearInterval(timerInterval);
-        timerDisplay.textContent = "00:00";
-
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const formData = new FormData();
         formData.append('audio_data', audioBlob, 'recorded_audio.wav');
 
-        fetch('/ask', {  // Updated endpoint
+        fetch('/upload', {
             method: 'POST',
             body: formData
         })
         .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.blob();
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            location.reload(); // Force refresh
+            return response.text();
         })
-        .then(audioBlob => {
-            const audioURL = URL.createObjectURL(audioBlob);
-            audioElement.src = audioURL;
-            audioElement.play();
+        .then(data => {
+            console.log('Audio uploaded successfully:', data);
         })
         .catch(error => {
-            console.error('Error uploading or processing audio:', error);
+            console.error('Error uploading audio:', error);
         });
       };
     })
@@ -76,4 +72,5 @@ stopButton.addEventListener('click', () => {
   stopButton.disabled = true;
 });
 
+// Initially disable the stop button
 stopButton.disabled = true;
