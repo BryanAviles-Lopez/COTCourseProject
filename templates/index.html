@@ -14,9 +14,9 @@
                 <button id="stop">Stop</button>
                 <span id="timer">00:00</span>
                 <audio id="audio"></audio>
-                <form id="uploadForm" method="POST" enctype="multipart/form-data">
+                <form id="uploadForm" method="POST" action="/upload" enctype="multipart/form-data">
                     <input type="hidden" name="audio_data" id="audioData">
-                    
+
                     <h3>Upload a PDF Book</h3>
                     <input type="file" name="pdf_file" accept="application/pdf">
                     <br><br>
